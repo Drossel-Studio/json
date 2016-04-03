@@ -11,7 +11,10 @@ var json_obj = {
 			rank:0,
 			wav:[],
 		},
-		main:[]
+		main:[],
+		start:0,
+		bpm:[]
+
 };
 
 
@@ -37,11 +40,26 @@ obj1.addEventListener("change",function(evt){
 	  json_obj.header[key] = readheader(key.toUpperCase());
   }
   json_obj.main = readmain();
-  alert(JSON.stringify(json_obj));
+  readother();
+
+  var blob = new Blob(
+	[JSON.stringify(json_obj)]
+	);
+
+  var link = document.createElement("a");
+  link.download = file.name + ".json";
+  link.href = window.URL.createObjectURL(blob);
+
+  var disp = document.getElementById("disp");
+
+  disp.innerHTML = '<a href="' + link.href + '" target="_blank">ファイルダウンロード</a>';
 
 }
 },false);
 }
+
+
+
 
 function readheader(name){
 	var head = bms.indexOf("#"+name,0);
@@ -70,21 +88,23 @@ function readmain(){
 	var data = [];
 	var i;
 	var main_data = [];
+	var lane;
 	while(head != -1){
 		for(i=11;i<14;i++){
 			head = (bms.indexOf("#",head+1));
 			if(head==-1)
 				break;
-			if(Number(bms.substr(head+4,2)) <11 || Number(bms.substr(head+4,2)) > 13){
+			lane = Number(bms.substr(head+4,2));
+			if(lane <11 || lane > 13){
 				data.push([]);
 				continue;
 			}
-			if(Number(bms.substr(head+1,3)) != measure || (Number(bms.substr(head+4,2)) != i)){
+			if(Number(bms.substr(head+1,3)) != measure ||  lane != i){
 				head--;
 				data.push([]);
-			} else {
-				data.push(slice_two(bms.substring(bms.indexOf(":",head)+1,bms.indexOf("\n",head)-1)));
+				continue;
 			}
+				data.push(slice_two(bms.substring(bms.indexOf(":",head)+1,bms.indexOf("\n",head)-1)));
 		}
 		var main_obj = new Main(measure,data);
 		main_data.push(main_obj);
@@ -92,9 +112,26 @@ function readmain(){
 		measure++;
 	}
 	return main_data;
-
-
 }
+
+function readother(){
+	var head = bms.indexOf("MAIN DATA FIELD");
+	while(head != -1){
+		head = bms.indexOf("#",head+1);
+		if(Number(bms.substr(head+4,2)) == 1){
+			json_obj.start=Number(bms.substr(head+1,3));
+		}
+		if(Number(bms.substr(head+4,2)) == 3){
+			json_obj.bpm.push([Number(bms.substr(head+1,3)),parseInt(bms.substr(bms.indexOf(":",head)+1,2),16)]);
+			if(parseInt(bms.substr(bms.indexOf(":",head)+1,2),16) == 0){
+				alert("bpm変更エラー：bpmが正しく設定されていないか、小節の頭に指定されていない可能性があります");
+			}
+		}
+
+	}
+}
+
+
 
 function slice_two(data){
 	var length = data.length;
