@@ -73,7 +73,10 @@ function readheader(name){
 		}
 		return wav;
 	}
-    return bms.substring(head+name.length+2,bms.indexOf("\n",head)-1);
+	if(name == "GENRE" || name == "TITLE" || name == "ARTIST")
+		return bms.substring(head+name.length+2,bms.indexOf("\n",head)-1);
+	else
+		return Number(bms.substring(head+name.length+2,bms.indexOf("\n",head)-1));
 }
 
 function Main(_line,_data){
