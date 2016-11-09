@@ -68,15 +68,15 @@ function readheader(name) {
   return bms.substring(head + name.length + 2, bms.indexOf("\n", head) - 1);
 }
 
-function Main(_line, _data) {
+function Main(_line, _channel, _data) {
   this.line = _line;
+  this.channel = _channel;
   this.data = _data;
 }
 
 function readmain() {
   var head = bms.indexOf("MAIN DATA FIELD");
   var measure = 0;
-  var data = [];
   var i;
   var main_data = [];
   var lane;
@@ -87,19 +87,21 @@ function readmain() {
         break;
       lane = Number(bms.substr(head + 4, 2));
       if (lane < 11 || lane > 13) {
-        data.push([]);
+        //data.push([]);
         continue;
       }
       if (Number(bms.substr(head + 1, 3)) != measure || lane != i) {
         head--;
-        data.push([]);
+        //data.push([]);
         continue;
       }
-      data.push(slice_two(bms.substring(bms.indexOf(":", head) + 1, bms.indexOf("\n", head) - 1)));
+      var data = slice_two(bms.substring(bms.indexOf(":", head) + 1, bms.indexOf("\n", head) - 1));
+      main_data.push(new Main(measure, lane - 11, data));
+      data = [];
     }
-    var main_obj = new Main(measure, data);
-    main_data.push(main_obj);
-    data = [];
+    //var main_obj = new Main(measure, lane - 11, data);
+    //main_data.push(main_obj);
+    //data = [];
     measure++;
   }
   return main_data;
