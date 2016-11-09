@@ -96,7 +96,8 @@ function readmain() {
         continue;
       }
       var data = slice_two(bms.substring(bms.indexOf(":", head) + 1, bms.indexOf("\n", head) - 1));
-      main_data.push(new Main(measure, lane - 11, data));
+      var main_obj = new Main(measure, lane - 11, data);
+      main_data.push(main_obj);
       data = [];
     }
     //var main_obj = new Main(measure, lane - 11, data);
