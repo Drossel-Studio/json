@@ -86,12 +86,12 @@ function readmain() {
         break;
       lane = Number(bms.substr(head + 4, 2));
       if (lane < 11 || lane > 13) {
-        data.push([]);
+        //data.push([]);
         continue;
       }
       if (Number(bms.substr(head + 1, 3)) != measure || lane != i) {
         head--;
-        data.push([]);
+        //data.push([]);
         continue;
       }
       var data = slice_two(bms.substring(bms.indexOf(":", head) + 1, bms.indexOf("\n", head) - 1));
