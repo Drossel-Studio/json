@@ -33,7 +33,7 @@ if (obj1 != null) {
       //ヘッダの読み込み
       var key;
       for (key in json_obj.header) {
-        json_obj.header[key] = readheader(key.toUpperCase());
+        json_obj.header[key] = readheader(key);
       }
       json_obj.main = readmain();
       readother();
@@ -68,8 +68,9 @@ function readheader(name) {
   return bms.substring(head + name.length + 2, bms.indexOf("\n", head) - 1);
 }
 
-function Main(_line, _data) {
+function Main(_line, _channel, _data) {
   this.line = _line;
+  this.channel = _channel;
   this.data = _data;
 }
 
@@ -86,12 +87,10 @@ function readmain() {
         break;
       lane = Number(bms.substr(head + 4, 2));
       if (lane < 11 || lane > 13) {
-        //data.push([]);
         continue;
       }
       if (Number(bms.substr(head + 1, 3)) != measure || lane != i) {
         head--;
-        //data.push([]);
         continue;
       }
       var data = slice_two(bms.substring(bms.indexOf(":", head) + 1, bms.indexOf("\n", head) - 1));
